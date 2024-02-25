@@ -13,7 +13,6 @@ class TestNotes(TestCase):
     TEXT = 'Тестовый текст'
     SLUG = 'Тестовый слаг'
 
-
     @classmethod
     def setUpTestData(cls):
         cls.author = User.objects.create(username='Автор')
@@ -23,7 +22,7 @@ class TestNotes(TestCase):
             slug=cls.SLUG,
             author=cls.author,
         )
-    
+
     @skip(reason='')
     def test_successful_creation(self):
         notes_count = Note.objects.count()

@@ -18,14 +18,14 @@ class TestAppLogic(TestCase):
     def setUpTestData(cls):
 
         cls.author = User.objects.create(username='Автор')
-        cls.author_client = Client()        
+        cls.author_client = Client()
         cls.author_client.force_login(cls.author)
 
         cls.form_data = {
             'title': 'Новый заголовок',
             'text': 'Новый текст',
             'slug': 'new-slug'
-        } 
+        }
 
     def test_user_can_create_note(self):
         url = reverse('notes:add')
@@ -56,14 +56,14 @@ class TestSlugLogic(TestCase):
     def setUpTestData(cls):
 
         cls.author = User.objects.create(username='Автор')
-        cls.author_client = Client()        
+        cls.author_client = Client()
         cls.author_client.force_login(cls.author)
-        
+
         cls.form_data = {
             'title': 'Новый заголовок',
             'text': 'Новый текст',
             'slug': 'new-slug'
-        } 
+        }
 
     def test_not_unique_slug(self):
         self.note = Note.objects.create(
@@ -75,7 +75,12 @@ class TestSlugLogic(TestCase):
         url = reverse('notes:add')
         self.form_data['slug'] = self.note.slug
         response = self.author_client.post(url, data=self.form_data)
-        self.assertFormError(response, 'form', 'slug', errors=(self.note.slug + WARNING))
+        self.assertFormError(
+            response,
+            'form',
+            'slug',
+            errors=(self.note.slug + WARNING)
+        )
         self.assertEqual(Note.objects.count(), 1)
 
     def test_empty_slug(self):
@@ -88,6 +93,7 @@ class TestSlugLogic(TestCase):
         expected_slug = slugify(self.form_data['title'])
         self.assertEqual(new_note.slug, expected_slug)
 
+
 class TestNoteLogic(TestCase):
     TITLE = 'Заголовок новости'
     TEXT = 'Тестовый текст'
@@ -96,11 +102,11 @@ class TestNoteLogic(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.not_author = User.objects.create(username='Не автор')
-        cls.not_author_client = Client()        
+        cls.not_author_client = Client()
         cls.not_author_client.force_login(cls.not_author)
 
         cls.author = User.objects.create(username='Автор')
-        cls.author_client = Client()        
+        cls.author_client = Client()
         cls.author_client.force_login(cls.author)
         cls.note = Note.objects.create(
             title=cls.TITLE,
@@ -108,12 +114,11 @@ class TestNoteLogic(TestCase):
             slug=cls.SLUG,
             author=cls.author,
         )
-        
         cls.form_data = {
             'title': 'Новый заголовок',
             'text': 'Новый текст',
             'slug': 'new-slug'
-        } 
+        }
 
     def test_author_can_edit_note(self):
         url = reverse('notes:edit', kwargs={'slug': self.note.slug})
